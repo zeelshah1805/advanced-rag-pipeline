@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Secrets
+.env
+
+# Built indexes & caches (regenerate with `python -m scripts.ingest`)
+storage/
+*.faiss
+*.sqlite
+.cache/
+
+# Corpus (don't commit copyrighted source docs; keep the sample)
+data/corpus/*
+!data/corpus/.gitkeep
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Eval outputs (regenerate with python -m eval.run_ablation)
+eval/results/*.json
+eval/results/*.md
+
+# Scratch / session logs
+scratch_ablation.log
+*.log

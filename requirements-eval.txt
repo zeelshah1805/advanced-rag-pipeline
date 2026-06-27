@@ -1,0 +1,23 @@
+# Optional — only needed to compute RAGAS metrics in the ablation.
+#
+# The deterministic retrieval metrics (gold_hit, context_recall/precision_doc,
+# citation_validity) run WITHOUT any of this, so the ablation already produces a
+# real table from `requirements.txt` alone. Install this only to add the four
+# LLM-judged RAGAS columns.
+#
+#   pip install -r requirements-eval.txt
+#
+# Pins keep RAGAS on the same langchain 0.2.x major the core uses. If pip still
+# tries to drag in langchain 1.x, install this set into a SEPARATE virtualenv
+# and run `python -m eval.run_ablation` from there — the eval harness only needs
+# the index files on disk, not the core package versions.
+
+ragas>=0.2.0,<0.3
+datasets>=2.19.0,<3.0
+langchain-core>=0.2.10,<0.3
+langchain-community>=0.2.0,<0.3
+langchain-groq>=0.1.9,<0.2        # 0.1.x pairs with langchain-core 0.2.x
+langchain-text-splitters>=0.2.0,<0.3
+
+# Observability (optional within optional): trace stages to Langfuse.
+langfuse>=2.0.0,<3.0

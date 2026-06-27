@@ -1,0 +1,2 @@
+# Drop your own .pdf / .txt / .md documents here, then run:  python -m scripts.ingest
+# This dir is gitignored (except this file) so source docs aren't committed.

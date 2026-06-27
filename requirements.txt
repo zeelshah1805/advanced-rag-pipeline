@@ -1,0 +1,29 @@
+# Core pipeline — everything needed to ingest, retrieve, and answer.
+# Upper bounds are deliberate: they keep pip from "upgrading" a working
+# langchain 0.2.x install up to 1.x (which triggers a huge, breaking resolve).
+
+# --- Core retrieval / ML ---
+sentence-transformers>=3.0.0      # bge-small embeddings + cross-encoder reranker
+faiss-cpu>=1.8.0                  # dense vector index (exact, in-process)
+rank-bm25>=0.2.2                  # sparse BM25 retrieval
+numpy>=1.26,<2.2
+
+# --- Document loading / chunking ---
+pypdf>=4.2.0                      # PDF text extraction
+langchain-text-splitters>=0.2.0,<0.4  # RecursiveCharacterTextSplitter only
+
+# --- LLM clients ---
+groq>=0.11.0                      # free hosted tier (default)
+# ollama is hit over HTTP via `requests`, no SDK needed
+requests>=2.31.0
+
+# --- UI ---
+streamlit>=1.36.0
+
+# --- Misc ---
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+
+# --- RAGAS evaluation is OPTIONAL and heavier; it lives in requirements-eval.txt
+#     so a basic install stays small and can't disturb the langchain stack.
+#     Install it with:  pip install -r requirements-eval.txt
