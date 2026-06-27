@@ -10,9 +10,8 @@ venv/
 .env
 
 # Built indexes & caches (regenerate with `python -m scripts.ingest`)
-storage/
+# storage/ is committed so cloud deployments (HF Spaces) work without a build step
 *.faiss
-*.sqlite
 .cache/
 
 # Corpus (don't commit copyrighted source docs; keep the sample)

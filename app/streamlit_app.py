@@ -16,14 +16,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st  # noqa: E402
 
+from rag.config import CONFIG  # noqa: E402
 from rag.pipeline import PipelineConfig, RAGPipeline  # noqa: E402
 from rag.stores import Store  # noqa: E402
 
 st.set_page_config(page_title="Advanced RAG", page_icon="🔎", layout="wide")
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _ensure_index():
+    """Build the index from the sample corpus if it doesn't exist yet.
+    Needed on fresh cloud deployments where storage/ isn't pre-built."""
+    meta = CONFIG.storage_dir / "meta.json"
+    if not meta.exists():
+        with st.spinner("Building index from sample corpus (first run only, ~30 s) …"):
+            from rag.ingest import ingest
+            ingest([REPO_ROOT / "data" / "sample"])
+
 
 @st.cache_resource(show_spinner="Loading index + models …")
 def get_pipeline():
+    _ensure_index()
     return RAGPipeline(store=Store())
 
 
@@ -52,14 +66,24 @@ with st.sidebar:
         "multi-hop one (e.g. *Compare Scale vs Enterprise retention*) to see hybrid "
         "and decomposition earn their keep."
     )
+    st.divider()
+    st.markdown("**Sample questions**")
+    st.caption("• What does RPL stand for?")
+    st.caption("• Compare Scale vs Enterprise retention and SLA")
+    st.caption("• What HTTP code does the IGW return on rate limiting?")
+    st.caption("• Is Nimbus HIPAA compliant?")
+    st.caption("• How does the Kafka connector handle failed records?")
 
-query = st.text_input("Ask a question about the corpus", placeholder="e.g. What does RPL stand for?")
+query = st.text_input(
+    "Ask a question about the Nimbus data platform",
+    placeholder="e.g. What does RPL stand for?",
+)
 
 if query:
     try:
         pipe = get_pipeline()
-    except FileNotFoundError as e:
-        st.error(f"{e}")
+    except Exception as e:
+        st.error(f"Failed to load pipeline: {e}")
         st.stop()
 
     with st.spinner("Retrieving and generating …"):
@@ -76,10 +100,14 @@ if query:
         st.markdown(ans.text)
 
         vbadge = "✅" if ans.citation_validity >= 0.999 else "⚠️"
-        st.metric("Citation validity", f"{ans.citation_validity:.0%}", help=(
-            "Fraction of the model's [chunk_id] citations that point to a chunk we "
-            "actually retrieved. Hallucinated cites are stripped."
-        ))
+        st.metric(
+            "Citation validity",
+            f"{ans.citation_validity:.0%}",
+            help=(
+                "Fraction of the model's [chunk_id] citations that point to a chunk "
+                "actually retrieved. Hallucinated cites are stripped automatically."
+            ),
+        )
         if ans.invalid_citations:
             st.caption(f"{vbadge} stripped invalid cites: {ans.invalid_citations}")
 
