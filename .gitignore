@@ -10,7 +10,7 @@ venv/
 .env
 
 # Built indexes & caches (regenerate with `python -m scripts.ingest`)
-# storage/ is committed so cloud deployments (HF Spaces) work without a build step
+storage/
 *.faiss
 .cache/
 
