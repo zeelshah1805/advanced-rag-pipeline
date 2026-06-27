@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st  # noqa: E402
 
-from rag.config import CONFIG  # noqa: E402
+from rag.config import CONFIG, META_PATH  # noqa: E402
 from rag.pipeline import PipelineConfig, RAGPipeline  # noqa: E402
 from rag.stores import Store  # noqa: E402
 
@@ -28,8 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 def _ensure_index():
     """Build the index from the sample corpus if it doesn't exist yet.
     Needed on fresh cloud deployments where storage/ isn't pre-built."""
-    meta = CONFIG.storage_dir / "meta.json"
-    if not meta.exists():
+    if not META_PATH.exists():
         with st.spinner("Building index from sample corpus (first run only, ~30 s) …"):
             from rag.ingest import ingest
             ingest([REPO_ROOT / "data" / "sample"])
